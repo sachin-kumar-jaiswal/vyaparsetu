@@ -13,7 +13,6 @@ import {
   ShieldAlert,
   FileSpreadsheet,
   Store,
-  Sparkles,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
@@ -21,7 +20,7 @@ import PincodeModal from '../common/PincodeModal';
 import AuthModal from '../common/AuthModal';
 
 export const Navbar = () => {
-  const { user, isAuthenticated, logout, quickDemoLogin } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const { totalItemsCount, totalSubtotal, pincode } = useCart();
   const navigate = useNavigate();
 
@@ -29,7 +28,6 @@ export const Navbar = () => {
   const [isPincodeOpen, setIsPincodeOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [isDemoDropdownOpen, setIsDemoDropdownOpen] = useState(false);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -38,9 +36,10 @@ export const Navbar = () => {
     }
   };
 
-  const handleDemoSwitch = async (role) => {
-    setIsDemoDropdownOpen(false);
-    await quickDemoLogin(role);
+  const handleLogout = async () => {
+    setIsUserMenuOpen(false);
+    await logout();
+    navigate('/');
   };
 
   return (
@@ -49,61 +48,21 @@ export const Navbar = () => {
       <div className="bg-brand-900 text-white text-[11px] py-1.5 px-4 font-medium">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="bg-accent-saffron text-ink-dark px-1.5 py-0.2 rounded font-extrabold text-[10px]">
+            <span className="bg-accent-saffron text-ink-dark px-1.5 py-0.5 rounded font-extrabold text-[10px]">
               B2B2C DIRECT
             </span>
             <span className="hidden sm:inline">
-              VyaparSetu — Connecting Indian Wholesalers, Retailers & Direct Customers
+              VyaparSetu — Connecting Indian Wholesalers, Retailers &amp; Direct Customers
             </span>
           </div>
-
           <div className="flex items-center gap-4">
-            {/* Quick Demo Switcher */}
-            <div className="relative">
-              <button
-                onClick={() => setIsDemoDropdownOpen(!isDemoDropdownOpen)}
-                className="flex items-center gap-1.5 bg-brand-800 hover:bg-brand-700 text-accent-saffron px-2.5 py-0.5 rounded-full font-bold text-[11px] transition border border-brand-700"
-              >
-                <Sparkles className="w-3 h-3" />
-                <span>Switch Role: {user ? user.role : 'Guest'}</span>
-                <ChevronDown className="w-3 h-3" />
-              </button>
-
-              {isDemoDropdownOpen && (
-                <div className="absolute right-0 top-7 w-52 bg-surface-pure rounded-xl shadow-float border border-surface-border p-1.5 z-50 text-ink-dark">
-                  <div className="px-2 py-1 text-[10px] font-bold text-ink-muted uppercase border-b border-surface-border mb-1">
-                    Evaluate Platform Role
-                  </div>
-                  <button
-                    onClick={() => handleDemoSwitch('CUSTOMER')}
-                    className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-surface-warm text-xs flex items-center gap-2"
-                  >
-                    🛒 <span>Customer (Grocery Store)</span>
-                  </button>
-                  <button
-                    onClick={() => handleDemoSwitch('RETAILER')}
-                    className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-surface-warm text-xs flex items-center gap-2"
-                  >
-                    🏪 <span>Retailer (Wholesale Pricing)</span>
-                  </button>
-                  <button
-                    onClick={() => handleDemoSwitch('WHOLESALER')}
-                    className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-surface-warm text-xs flex items-center gap-2"
-                  >
-                    🏭 <span>Wholesaler (Seller Hub)</span>
-                  </button>
-                  <button
-                    onClick={() => handleDemoSwitch('SUPER_ADMIN')}
-                    className="w-full text-left px-2.5 py-1.5 rounded-lg hover:bg-surface-warm text-xs flex items-center gap-2"
-                  >
-                    🛡️ <span>Super Admin (Moderation)</span>
-                  </button>
-                </div>
-              )}
-            </div>
-
+            {user && (
+              <span className="text-accent-saffron font-bold text-[10px] uppercase tracking-wide">
+                Signed in as {user.role.toLowerCase()}
+              </span>
+            )}
             <Link to="/bulk-inquiries" className="hover:text-accent-saffron transition hidden md:inline">
-              Bulk Wedding & Event Quotes
+              Bulk Wedding &amp; Event Quotes
             </Link>
           </div>
         </div>
@@ -301,10 +260,7 @@ export const Navbar = () => {
 
                       <div className="border-t border-surface-border mt-1 pt-1">
                         <button
-                          onClick={() => {
-                            logout();
-                            setIsUserMenuOpen(false);
-                          }}
+                          onClick={handleLogout}
                           className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 rounded-lg text-left"
                         >
                           <LogOut className="w-4 h-4" />

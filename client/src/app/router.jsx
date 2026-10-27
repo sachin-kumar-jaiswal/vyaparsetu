@@ -1,6 +1,8 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 
+import ProtectedRoute from '../components/common/ProtectedRoute';
+
 import HomePage from '../features/customer/HomePage';
 import CatalogPage from '../features/catalog/CatalogPage';
 import ProductDetailPage from '../features/catalog/ProductDetailPage';
@@ -18,19 +20,100 @@ import AdminDashboardPage from '../features/admin/AdminDashboardPage';
 export const AppRoutes = () => {
   return (
     <Routes>
+      {/* ── Public routes ─────────────────────────────────────────── */}
       <Route path="/" element={<HomePage />} />
       <Route path="/products" element={<CatalogPage />} />
       <Route path="/products/:idOrSlug" element={<ProductDetailPage />} />
-      <Route path="/cart" element={<CartPage />} />
-      <Route path="/checkout" element={<CheckoutPage />} />
-      <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
-      <Route path="/my-orders" element={<MyOrdersPage />} />
-      <Route path="/addresses" element={<AddressesPage />} />
-      <Route path="/wholesaler/onboarding" element={<WholesalerOnboardingPage />} />
-      <Route path="/wholesaler/dashboard" element={<WholesalerDashboardPage />} />
-      <Route path="/retailer/dashboard" element={<RetailerDashboardPage />} />
-      <Route path="/bulk-inquiries" element={<BulkInquiriesPage />} />
-      <Route path="/admin" element={<AdminDashboardPage />} />
+
+      {/* ── Authenticated routes (any logged-in role) ─────────────── */}
+      <Route
+        path="/cart"
+        element={
+          <ProtectedRoute>
+            <CartPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/checkout"
+        element={
+          <ProtectedRoute>
+            <CheckoutPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/order-confirmation"
+        element={
+          <ProtectedRoute>
+            <OrderConfirmationPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/my-orders"
+        element={
+          <ProtectedRoute>
+            <MyOrdersPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/addresses"
+        element={
+          <ProtectedRoute>
+            <AddressesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/bulk-inquiries"
+        element={
+          <ProtectedRoute>
+            <BulkInquiriesPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* ── Wholesaler routes (WHOLESALER role, approval required) ─── */}
+      <Route
+        path="/wholesaler/onboarding"
+        element={
+          <ProtectedRoute requiredRoles={['WHOLESALER']}>
+            <WholesalerOnboardingPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/wholesaler/dashboard"
+        element={
+          <ProtectedRoute requiredRoles={['WHOLESALER']} requireApproval>
+            <WholesalerDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* ── Retailer routes (RETAILER role, approval required) ─────── */}
+      <Route
+        path="/retailer/dashboard"
+        element={
+          <ProtectedRoute requiredRoles={['RETAILER']} requireApproval>
+            <RetailerDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* ── Admin routes (SUPER_ADMIN role only) ───────────────────── */}
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute requiredRoles={['SUPER_ADMIN']}>
+            <AdminDashboardPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
