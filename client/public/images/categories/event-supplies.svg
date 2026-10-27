@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="cbg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FEF9C3"/>
+      <stop offset="100%" stop-color="#CA8A04"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" rx="24" fill="url(#cbg)"/>
+  <circle cx="100" cy="90" r="48" fill="#FFFFFF" opacity="0.9" />
+  <rect x="75" y="70" width="50" height="40" rx="8" fill="#FEF9C3" />
+  <text x="100" y="165" font-family="'Plus Jakarta Sans', system-ui, sans-serif" font-weight="700" font-size="13" fill="#202820" text-anchor="middle">Event & Bulk Supplies</text>
+</svg>

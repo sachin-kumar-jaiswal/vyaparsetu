@@ -1,0 +1,42 @@
+{
+  "name": "vyaparsetu",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "VyaparSetu - Indian B2B2C Marketplace Connecting Wholesalers, Retailers, and Customers",
+  "main": "server/src/server.js",
+  "scripts": {
+    "install:server": "cd server && npm install",
+    "install:client": "cd client && npm install",
+    "install:all": "npm install && npm run install:server && npm run install:client",
+    "dev": "concurrently -n \"SERVER,CLIENT\" -c \"green,blue\" \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "build:client": "cd client && npm run build",
+    "build": "npm run build:client",
+    "start": "cd server && npm start",
+    "seed:catalog": "cd server && node ../scripts/seedCatalogue.js",
+    "seed:demo": "cd server && node ../scripts/seedDemoAccounts.js",
+    "bootstrap:admin": "cd server && node src/utils/bootstrapAdmin.js",
+    "test": "cd server && npm test"
+  },
+  "keywords": [
+    "b2b2c",
+    "marketplace",
+    "ecommerce",
+    "grocery",
+    "wholesale",
+    "mern",
+    "india"
+  ],
+  "author": "VyaparSetu Engineering",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "dependencies": {
+    "axios": "^1.21.0",
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^18.0.9",
+    "mongoose": "^9.11.4"
+  }
+}
