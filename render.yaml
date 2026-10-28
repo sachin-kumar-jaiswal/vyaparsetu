@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm ci --prefix server
-    startCommand: npm --prefix server start
+    startCommand: npm run seed:catalog && npm --prefix server start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
