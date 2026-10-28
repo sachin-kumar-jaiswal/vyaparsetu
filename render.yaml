@@ -2,6 +2,7 @@ services:
   - type: web
     name: vyaparsetu-api
     runtime: node
+    plan: free
     buildCommand: npm ci --prefix server
     startCommand: npm --prefix server start
     healthCheckPath: /api/health

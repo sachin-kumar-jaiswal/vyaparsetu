@@ -139,6 +139,7 @@ VyaparSetu features a transparent, direct seller-managed payment model:
    * Build Command: `npm ci --prefix server`
    * Start Command: `npm --prefix server start`
    * Health Check Path: `/api/health`
+   * Instance Type: `Free` (may sleep when idle and take longer to answer the first request after inactivity)
 3. Set these environment variables (the value of `MONGODB_URI` must be only the URI, with no `MONGODB_URI=` prefix):
    * `NODE_ENV`: `production`
    * `MONGODB_URI`: `<Your MongoDB Atlas URI>`
