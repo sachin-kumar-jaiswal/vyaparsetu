@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import mongoose from '../server/node_modules/mongoose/index.js';
+import { getMongoUri } from '../server/src/config/db.js';
 
 import User from '../server/src/modules/users/User.js';
 import Category from '../server/src/modules/categories/Category.js';
@@ -1262,8 +1263,8 @@ const rawCatalogue = [
 ];
 
 const seedCatalogue = async () => {
-  const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/vyaparsetu?directConnection=true';
-  console.log(`[Seed Catalogue] Connecting to ${uri}...`);
+  const uri = getMongoUri();
+  console.log('[Seed Catalogue] Connecting to MongoDB...');
   await mongoose.connect(uri);
 
   // Find or create primary approved demonstration wholesaler

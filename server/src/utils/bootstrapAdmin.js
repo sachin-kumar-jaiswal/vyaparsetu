@@ -1,17 +1,18 @@
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import { getMongoUri } from '../config/db.js';
 import User from '../modules/users/User.js';
 
 dotenv.config();
 
 const bootstrapAdmin = async () => {
-  const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/vyaparsetu';
+  const uri = getMongoUri();
   const name = process.env.ADMIN_NAME || 'VyaparSetu Administrator';
   const email = process.env.ADMIN_EMAIL || 'admin@vyaparsetu.in';
   const password = process.env.ADMIN_PASSWORD || 'AdminSecure@2026';
   const phone = process.env.ADMIN_PHONE || '+919876543210';
 
-  console.log(`[Admin Bootstrap] Connecting to database at: ${uri}`);
+  console.log('[Admin Bootstrap] Connecting to MongoDB...');
   await mongoose.connect(uri);
 
   const existingAdmin = await User.findOne({ email: email.toLowerCase() });

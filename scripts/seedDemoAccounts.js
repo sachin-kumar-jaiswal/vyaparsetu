@@ -1,5 +1,6 @@
 import dotenv from '../server/node_modules/dotenv/lib/main.js';
 import mongoose from '../server/node_modules/mongoose/index.js';
+import { getMongoUri } from '../server/src/config/db.js';
 import User from '../server/src/modules/users/User.js';
 import SellerProfile from '../server/src/modules/sellers/SellerProfile.js';
 import Address from '../server/src/modules/addresses/Address.js';
@@ -8,8 +9,8 @@ dotenv.config({ path: '../server/.env' });
 if (!process.env.MONGODB_URI) dotenv.config();
 
 const seedAccounts = async () => {
-  const uri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/vyaparsetu?directConnection=true';
-  console.log(`[Seed Demo Accounts] Connecting to ${uri}...`);
+  const uri = getMongoUri();
+  console.log('[Seed Demo Accounts] Connecting to MongoDB...');
   await mongoose.connect(uri);
 
   const accounts = [

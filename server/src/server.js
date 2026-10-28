@@ -1,8 +1,6 @@
-import dotenv from 'dotenv';
+import 'dotenv/config';
 import app from './app.js';
 import { connectDB } from './config/db.js';
-
-dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 
@@ -30,4 +28,7 @@ const startServer = async () => {
   process.on('SIGINT', () => handleShutdown('SIGINT'));
 };
 
-startServer();
+startServer().catch((error) => {
+  console.error(`[Server] Startup failed: ${error.message}`);
+  process.exitCode = 1;
+});

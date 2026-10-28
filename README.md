@@ -129,27 +129,28 @@ VyaparSetu features a transparent, direct seller-managed payment model:
 
 ### A. Database (MongoDB Atlas)
 1. Create a free cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
-2. Create a database user and allow network access (`0.0.0.0/0`).
+2. Create a dedicated database user. Allow the Render service's outbound IP addresses in Atlas Network Access where possible; `0.0.0.0/0` is a less restrictive fallback.
 3. Obtain your connection string: `mongodb+srv://<username>:<password>@cluster.mongodb.net/vyaparsetu`.
 
 ### B. Backend API (Render)
 1. Create a new **Web Service** on Render connected to your Git repository.
-2. Root Directory: `server`
-3. Build Command: `npm install`
-4. Start Command: `npm start`
-5. Environment Variables:
+2. To use the included `render.yaml`, create a **Blueprint** from the repository. For a manually configured web service:
+   * Root Directory: leave blank (repository root)
+   * Build Command: `npm ci --prefix server`
+   * Start Command: `npm --prefix server start`
+   * Health Check Path: `/api/health`
+3. Set these environment variables (the value of `MONGODB_URI` must be only the URI, with no `MONGODB_URI=` prefix):
    * `NODE_ENV`: `production`
-   * `PORT`: `5000`
    * `MONGODB_URI`: `<Your MongoDB Atlas URI>`
-   * `JWT_SECRET`: `<A strong random 64-char string>`
-   * `FRONTEND_URL`: `https://your-vyaparsetu.vercel.app`
-   * `ADMIN_EMAIL`: `admin@vyaparsetu.in`
-   * `ADMIN_PASSWORD`: `<Strong admin password>`
-6. Run the seed command via Render Shell:
+   * `JWT_SECRET`: `<A strong random secret>` (generated automatically by the Blueprint)
+   * `FRONTEND_URL`: `<Your Vercel frontend origin, without a trailing slash>`
+4. In MongoDB Atlas, add the Render service's outbound IP addresses to Network Access, or use `0.0.0.0/0` if the deployment requires broad access. Use a dedicated database user with a strong password.
+5. From the repository root in Render Shell, run the seed commands:
    ```bash
-   node ../scripts/seedDemoAccounts.js
-   node ../scripts/seedCatalogue.js
+   npm run seed:demo
+   npm run seed:catalog
    ```
+   Keep administrator credentials private and change any demo credentials before production use.
 
 ### C. Frontend Web Client (Vercel)
 1. Import your Git repository into [Vercel](https://vercel.com).
@@ -158,7 +159,8 @@ VyaparSetu features a transparent, direct seller-managed payment model:
 4. Build Command: `npm run build`
 5. Output Directory: `dist`
 6. Environment Variables:
-   * `VITE_API_URL`: `https://your-vyaparsetu-api.onrender.com/api/v1`
+   * `VITE_API_URL`: `https://<your-render-service>.onrender.com/api/v1`
+7. After the first deployment, set Render's `FRONTEND_URL` to the exact Vercel production origin, then redeploy the Render service. Redeploy Vercel after changing `VITE_API_URL`.
 
 ---
 

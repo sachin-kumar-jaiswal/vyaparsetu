@@ -24,8 +24,11 @@ app.use(helmet());
 const allowedOrigins = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
-  process.env.FRONTEND_URL,
-].filter(Boolean);
+  ...(process.env.FRONTEND_URL || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+];
 
 app.use(
   cors({
@@ -55,8 +58,8 @@ app.get('/api/health', (req, res) => {
   const dbState = mongoose.connection.readyState;
   const dbStatusMap = { 0: 'disconnected', 1: 'connected', 2: 'connecting', 3: 'disconnecting' };
 
-  res.status(200).json({
-    status: 'ok',
+  res.status(dbState === 1 ? 200 : 503).json({
+    status: dbState === 1 ? 'ok' : 'unavailable',
     service: 'VyaparSetu Backend API',
     version: '1.0.0',
     uptime: Math.floor(process.uptime()),
