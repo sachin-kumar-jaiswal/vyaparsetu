@@ -1,11 +1,16 @@
 import 'dotenv/config';
 import app from './app.js';
 import { connectDB } from './config/db.js';
+import { provisionAdmin } from './utils/bootstrapAdmin.js';
 
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   await connectDB();
+
+  if (process.env.BOOTSTRAP_ADMIN === 'true') {
+    await provisionAdmin();
+  }
 
   const server = app.listen(PORT, () => {
     console.log(`====================================================`);

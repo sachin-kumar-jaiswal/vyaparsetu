@@ -1,51 +1,71 @@
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import { pathToFileURL } from 'node:url';
 import { getMongoUri } from '../config/db.js';
 import User from '../modules/users/User.js';
 
 dotenv.config();
 
-const bootstrapAdmin = async () => {
-  const uri = getMongoUri();
-  const name = process.env.ADMIN_NAME || 'VyaparSetu Administrator';
-  const email = process.env.ADMIN_EMAIL || 'admin@vyaparsetu.in';
-  const password = process.env.ADMIN_PASSWORD || 'AdminSecure@2026';
-  const phone = process.env.ADMIN_PHONE || '+919876543210';
+export const getAdminBootstrapConfig = (env = process.env) => {
+  const email = env.ADMIN_EMAIL?.trim().toLowerCase();
+  const password = env.ADMIN_PASSWORD;
 
-  console.log('[Admin Bootstrap] Connecting to MongoDB...');
-  await mongoose.connect(uri);
-
-  const existingAdmin = await User.findOne({ email: email.toLowerCase() });
-
-  if (existingAdmin) {
-    if (existingAdmin.role !== 'SUPER_ADMIN') {
-      existingAdmin.role = 'SUPER_ADMIN';
-      existingAdmin.status = 'ACTIVE';
-      existingAdmin.isApproved = true;
-      await existingAdmin.save();
-      console.log(`[Admin Bootstrap] Existing user ${email} upgraded to SUPER_ADMIN.`);
-    } else {
-      console.log(`[Admin Bootstrap] Super Admin ${email} already exists.`);
-    }
-  } else {
-    await User.create({
-      name,
-      email: email.toLowerCase(),
-      password,
-      phone,
-      role: 'SUPER_ADMIN',
-      status: 'ACTIVE',
-      isApproved: true,
-    });
-    console.log(`[Admin Bootstrap] Super Admin provisioned successfully: ${email}`);
+  if (!email || !password) {
+    throw new Error('ADMIN_EMAIL and ADMIN_PASSWORD must be set to bootstrap an administrator.');
+  }
+  if (password.length < 16) {
+    throw new Error('ADMIN_PASSWORD must be at least 16 characters long.');
   }
 
-  await mongoose.disconnect();
-  console.log('[Admin Bootstrap] Completed successfully.');
-  process.exit(0);
+  return {
+    name: env.ADMIN_NAME?.trim() || 'VyaparSetu Administrator',
+    email,
+    password,
+    phone: env.ADMIN_PHONE?.trim() || '+919876543210',
+  };
 };
 
-bootstrapAdmin().catch((err) => {
-  console.error('[Admin Bootstrap Error]', err);
-  process.exit(1);
-});
+export const provisionAdmin = async (config = getAdminBootstrapConfig()) => {
+  const existingUser = await User.findOne({ email: config.email });
+
+  if (existingUser && existingUser.role !== 'SUPER_ADMIN') {
+    throw new Error('The configured administrator email already belongs to a non-admin user.');
+  }
+
+  if (existingUser) {
+    existingUser.name = config.name;
+    existingUser.password = config.password;
+    existingUser.phone = config.phone;
+    existingUser.status = 'ACTIVE';
+    existingUser.isApproved = true;
+    await existingUser.save();
+    console.log(`[Admin Bootstrap] Administrator credentials refreshed for ${config.email}.`);
+    return;
+  }
+
+  await User.create({
+    ...config,
+    role: 'SUPER_ADMIN',
+    status: 'ACTIVE',
+    isApproved: true,
+  });
+  console.log(`[Admin Bootstrap] Administrator provisioned for ${config.email}.`);
+};
+
+const runAdminBootstrap = async () => {
+  console.log('[Admin Bootstrap] Connecting to MongoDB...');
+  await mongoose.connect(getMongoUri());
+  try {
+    await provisionAdmin();
+    console.log('[Admin Bootstrap] Completed successfully.');
+  } finally {
+    await mongoose.disconnect();
+  }
+};
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  runAdminBootstrap().catch((error) => {
+    console.error(`[Admin Bootstrap Error] ${error.message}`);
+    process.exitCode = 1;
+  });
+}

@@ -163,6 +163,9 @@ VyaparSetu features a transparent, direct seller-managed payment model:
    * `VITE_API_URL`: `https://<your-render-service>.onrender.com/api/v1`
 7. After the first deployment, set Render's `FRONTEND_URL` to the exact Vercel production origin, then redeploy the Render service. Redeploy Vercel after changing `VITE_API_URL`.
 
+   ### D. Production Administrator
+   To provision or recover the administrator on Render, temporarily set `BOOTSTRAP_ADMIN` to `true`, `ADMIN_EMAIL` to the administrator email, and `ADMIN_PASSWORD` to a unique password of at least 16 characters. Redeploy the service; it provisions that account before the API starts. Remove `BOOTSTRAP_ADMIN` and `ADMIN_PASSWORD` after the deployment succeeds. Never use the demo credentials documented above in production.
+
 ---
 
 ## 8. Documentation Index
